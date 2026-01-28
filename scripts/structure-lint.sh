@@ -78,7 +78,7 @@ ALLOW_SPECIAL_FILENAMES=(
 )
 
 # Skip paths from checks (relative)
-SKIP_PATH_REGEX='^(\.git/|\.venv/|venv/|node_modules/|dist/|build/|site-packages/|\.ruff_cache/|\.mypy_cache/|\.pytest_cache/)'
+SKIP_PATH_REGEX='^(\.shared-repo/|\.git/|\.venv/|venv/|node_modules/|dist/|build/|site-packages/|\.ruff_cache/|\.mypy_cache/|\.pytest_cache/)'
 
 # Duplicate basename allowlist
 ALLOW_DUPLICATE_BASENAMES=(
