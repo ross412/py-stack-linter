@@ -20,7 +20,7 @@ jobs:
         uses: ross412/py-stack-linter@v1
         with:
           python-version: "3.11"
-          ruff-version: "latest"
+          ruff-version: "0.14.14"
           run-structure-lint: true
           run-dockerfile-lint: true
           # Optionally add trusted registries for Dockerfile validation
