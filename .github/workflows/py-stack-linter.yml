@@ -51,7 +51,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           version: ${{ inputs.ruff-version }}
-          args: --config .shared-repo/ruff.toml
+          args: check --config .shared-repo/ruff.toml
 
       - name: File structure lint
         if: ${{ inputs.run-structure-lint }}
