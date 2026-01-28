@@ -57,7 +57,6 @@ jobs:
           args: >-
             --config .shared-repo/ruff.toml
             ${{ inputs.extra-ruff-args }}
-          src: "."
 
       - name: File structure lint
         if: ${{ inputs.run-structure-lint }}
