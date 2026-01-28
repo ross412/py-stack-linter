@@ -117,10 +117,10 @@ lower() {
 
 is_ascii() {
   local s="$1"
-  export LC_ALL=C
-  [[ "$s" == *[! -~]* ]] && return 1
+  LC_ALL=C printf '%s' "$s" | grep -q '[^ -~]' && return 1
   return 0
 }
+
 
 has_space() {
   local s="$1"
