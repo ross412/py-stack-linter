@@ -222,6 +222,7 @@ check_file_name() {
 
   # Now enforce common rules on everything else
   check_segment_common_rules "$seg" "file" "$rel"
+  (( fail > 0 )) && return
 
   # Split base + extension (only last dot)
   local base ext
