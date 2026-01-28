@@ -209,17 +209,20 @@ check_file_name() {
   local seg="$1"
   local rel="$2"
 
-  check_segment_common_rules "$seg" "file" "$rel"
+  # Allow a short special-case list (e.g. Dockerfile, Makefile, LICENSE, README.md)
+  # Must happen BEFORE common rules (since common rules raise uppercase errors).
+  if is_allowed_special_filename "$seg"; then
+    return
+  fi
 
   # Allow dotfiles (but still enforce lowercase/ascii/no spaces/no leading hyphen/length)
+  # If you truly want dotfiles exempt from common rules, keep this before common rules.
   if [[ "$seg" == .* ]]; then
     return
   fi
 
-  # Allow a short special-case list (e.g. Dockerfile, Makefile, LICENSE, README.md)
-  if is_allowed_special_filename "$seg"; then
-    return
-  fi
+  # Now enforce common rules on everything else
+  check_segment_common_rules "$seg" "file" "$rel"
 
   # Split base + extension (only last dot)
   local base ext
@@ -233,12 +236,12 @@ check_file_name() {
       bad "Bad file extension (lowercase/digits only): $rel"
     fi
   else
-    # No extension: enforce segment rule
     if ! [[ "$seg" =~ $SEGMENT_REGEX ]]; then
       bad "Bad filename (use lowercase_underscore): $rel"
     fi
   fi
 }
+
 
 # -------------------------
 # 1) Required / forbidden
