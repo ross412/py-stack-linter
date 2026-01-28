@@ -95,7 +95,8 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         continue-on-error: true
         with:
-          dockerfile: ${{ inputs.dockerfile-glob }}
+          dockerfile: Dockerfile
+          recursive: true
           config: ${{ github.workspace }}/hadolint.generated.yaml
 
       - name: Fail if any linter failed
