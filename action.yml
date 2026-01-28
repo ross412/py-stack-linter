@@ -54,12 +54,7 @@ runs:
       if: ${{ inputs.run-structure-lint == 'true' }}
       continue-on-error: true
       shell: bash
-      run: |
-        echo "Working directory: $(pwd)"
-        echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-        echo "Files in src/:"
-        find src -type f 2>/dev/null | head -20 || echo "src/ not found"
-        bash "${{ github.action_path }}/scripts/structure-lint.sh"
+      run: bash "${{ github.action_path }}/scripts/structure-lint.sh"
 
     - name: Build Hadolint config
       id: build-hadolint-config
