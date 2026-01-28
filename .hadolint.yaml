@@ -1,0 +1,11 @@
+failure-threshold: warning
+
+ignored:
+  - DL3008   # Pin versions in apt-get install
+  - DL3013   # Pin pip versions
+  - DL4006   # Use SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+  - DL3026   # Use only an allowed registry in the FROM image
+
+trustedRegistries:
+  - docker.io
+  - ghcr.io

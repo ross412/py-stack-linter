@@ -1,0 +1,83 @@
+name: py-stack-linter (shared)
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        type: string
+        default: "3.11"
+      ruff-version:
+        type: string
+        default: "latest"
+      run-structure-lint:
+        type: boolean
+        default: true
+      run-dockerfile-lint:
+        type: boolean
+        default: true
+      dockerfile-glob:
+        type: string
+        default: "**/Dockerfile"
+      extra-ruff-args:
+        type: string
+        default: ""
+      trusted-registries:
+        type: string
+        default: ""
+        description: "Comma-separated list of extra trusted registries for hadolint"
+
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout caller repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Run Ruff (using shared config)
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: ${{ inputs.ruff-version }}
+          args: >-
+            check
+            --config ${{ github.action_path }}/../../ruff.toml
+            ${{ inputs.extra-ruff-args }}
+            .
+
+      - name: File structure lint
+        if: ${{ inputs.run-structure-lint }}
+        run: bash "${{ github.action_path }}/../../scripts/lint-structure.sh"
+
+      - name: Build Hadolint config
+        if: ${{ inputs.run-docker-file-lint}}
+        run: |
+          cp "${{ github.action_path }}/../../.hadolint.yaml" hadolint.generated.yaml
+
+          echo "" >> hadolint.generated.yaml
+          echo "trustedRegistries:" >> hadolint.generated.yaml
+          echo "  - docker.io" >> hadolint.generated.yaml
+          echo "  - ghcr.io" >> hadolint.generated.yaml
+
+          if [ -n "${{ inputs.trusted-registries }}" ]; then
+            IFS=',' read -ra REGS <<< "${{ inputs.trusted-registries }}"
+            for r in "${REGS[@]}"; do
+              r="$(echo "$r" | xargs)"
+              [ -n "$r" ] && echo "  - $r" >> hadolint.generated.yaml
+            done
+          fi
+
+      - name: Hadolint (Dockerfile lint)
+        if: ${{ inputs.run-dockerfile-lint }}
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ inputs.dockerfile-glob }}
+          config: hadolint.generated.yaml
