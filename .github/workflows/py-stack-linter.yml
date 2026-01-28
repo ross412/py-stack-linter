@@ -48,6 +48,7 @@ jobs:
           python-version: ${{ inputs.python-version }}
 
       - name: Run Ruff (using shared config)
+        id: ruff
         uses: astral-sh/ruff-action@v3
         continue-on-error: true
         with:
@@ -55,12 +56,14 @@ jobs:
           args: check --config .shared-repo/ruff.toml
 
       - name: File structure lint
+        id: structure
         if: ${{ inputs.run-structure-lint }}
         continue-on-error: true
-        run: bash ".shared-repo/scripts/lint-structure.sh"
+        run: bash ".shared-repo/scripts/structure-lint.sh"
 
       - name: Build Hadolint config
         if: ${{ inputs.run-docker-file-lint}}
+        continue-on-error: true
         run: |
           cp ".shared-repo/.hadolint.yaml" hadolint.generated.yaml
 
@@ -78,9 +81,24 @@ jobs:
           fi
 
       - name: Hadolint (Dockerfile lint)
+        id: hadolint
         if: ${{ inputs.run-dockerfile-lint }}
         uses: hadolint/hadolint-action@v3.1.0
         continue-on-error: true
         with:
           dockerfile: ${{ inputs.dockerfile-glob }}
           config: hadolint.generated.yaml
+
+      - name: Fail if any linter failed
+        if: always()
+        run: |
+          echo "Ruff: ${{ steps.ruff.outcome }}"
+          echo "Structure: ${{ steps.structure.outcome }}"
+          echo "Hadolint: ${{ steps.hadolint.outcome }}"
+
+          if [ "${{ steps.ruff.outcome }}" != "success" ] || \
+            [ "${{ steps.structure.outcome }}" != "success" ] || \
+            [ "${{ steps.hadolint.outcome }}" != "success" ]; then
+            echo "One or more linters failed."
+            exit 1
+          fi
