@@ -11,9 +11,9 @@ inputs:
     required: false
     default: "3.11"
   ruff-version:
-    description: Ruff version to use (or "latest")
+    description: Ruff version to use
     required: false
-    default: "latest"
+    default: "0.14.14"
   run-structure-lint:
     description: Enable file structure linting
     required: false
