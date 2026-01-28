@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run py-stack-linter
-        uses: ross412/py-stack-linter/.github/actions/py-stack-linter@main
+        uses: ross412/py-stack-linter@main
         with:
           python-version: ${{ inputs.python-version }}
           ruff-version: ${{ inputs.ruff-version }}
