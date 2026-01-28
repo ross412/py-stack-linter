@@ -137,10 +137,9 @@ should_skip_relpath() {
 }
 
 is_allowed_special_filename() {
-  local base_lc
-  base_lc="$(lower "$1")"
+  local base="$1"
   for a in "${ALLOW_SPECIAL_FILENAMES[@]}"; do
-    [[ "$base_lc" == "$a" ]] && return 0
+    [[ "$base" == "$a" ]] && return 0
   done
   return 1
 }
