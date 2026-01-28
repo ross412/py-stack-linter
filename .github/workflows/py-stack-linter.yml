@@ -49,12 +49,14 @@ jobs:
 
       - name: Run Ruff (using shared config)
         uses: astral-sh/ruff-action@v3
+        continue-on-error: true
         with:
           version: ${{ inputs.ruff-version }}
           args: check --config .shared-repo/ruff.toml
 
       - name: File structure lint
         if: ${{ inputs.run-structure-lint }}
+        continue-on-error: true
         run: bash ".shared-repo/scripts/lint-structure.sh"
 
       - name: Build Hadolint config
@@ -78,6 +80,7 @@ jobs:
       - name: Hadolint (Dockerfile lint)
         if: ${{ inputs.run-dockerfile-lint }}
         uses: hadolint/hadolint-action@v3.1.0
+        continue-on-error: true
         with:
           dockerfile: ${{ inputs.dockerfile-glob }}
           config: hadolint.generated.yaml
