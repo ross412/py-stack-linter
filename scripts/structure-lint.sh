@@ -116,10 +116,9 @@ lower() {
 }
 
 is_ascii() {
-  # Reject any non-ASCII byte.
-  # LC_ALL=C makes [ -~ ] operate on bytes (0x20-0x7E).
   local s="$1"
-  LC_ALL=C [[ "$s" == *[! -~]* ]] && return 1
+  export LC_ALL=C
+  [[ "$s" == *[! -~]* ]] && return 1
   return 0
 }
 
