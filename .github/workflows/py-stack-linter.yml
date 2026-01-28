@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ross412/py-stack-linter
-          ref: v1
+          ref: main
           path: .shared-repo
 
       - name: Setup Python
