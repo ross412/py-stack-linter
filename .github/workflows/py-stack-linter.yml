@@ -38,6 +38,13 @@ jobs:
       - name: Checkout caller repo
         uses: actions/checkout@v4
 
+      - name: Checkout shared linter repo
+        uses: actions/checkout@v4
+        with:
+          repository: ross412/py-stack-linter
+          ref: v1
+          path: .shared-repo
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -49,18 +56,18 @@ jobs:
           version: ${{ inputs.ruff-version }}
           args: >-
             check
-            --config ${{ github.action_path }}/../../ruff.toml
+            --config .shared-repo/ruff.toml
             ${{ inputs.extra-ruff-args }}
             .
 
       - name: File structure lint
         if: ${{ inputs.run-structure-lint }}
-        run: bash "${{ github.action_path }}/../../scripts/lint-structure.sh"
+        run: bash ".shared-repo/scripts/lint-structure.sh"
 
       - name: Build Hadolint config
         if: ${{ inputs.run-docker-file-lint}}
         run: |
-          cp "${{ github.action_path }}/../../.hadolint.yaml" hadolint.generated.yaml
+          cp ".shared-repo/.hadolint.yaml" hadolint.generated.yaml
 
           echo "" >> hadolint.generated.yaml
           echo "trustedRegistries:" >> hadolint.generated.yaml
