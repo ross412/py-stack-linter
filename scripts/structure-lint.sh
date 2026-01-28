@@ -73,10 +73,10 @@ EXT_REGEX='^[a-z0-9]+$'
 # Special-case filenames that do NOT fit the rule but you still want to allow
 # (Keep this list short; prefer renaming to match the convention.)
 ALLOW_SPECIAL_FILENAMES=(
-  "dockerfile"
-  "makefile"
-  "license"
-  "readme.md"
+  "Dockerfile"
+  "Makefile"
+  "LICENSE"
+  "README.md"
   ".gitignore"
   ".gitattributes"
 )
