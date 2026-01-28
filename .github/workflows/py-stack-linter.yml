@@ -35,80 +35,12 @@ jobs:
       - name: Checkout caller repo
         uses: actions/checkout@v4
 
-      - name: Checkout shared linter repo
-        uses: actions/checkout@v4
-        with:
-          repository: ross412/py-stack-linter
-          ref: main
-          path: .shared-repo
-        
-      - name: Normalize shared scripts to LF
-        run: |
-          sed -i 's/\r$//' .shared-repo/scripts/structure-lint.sh
-          sed -i 's/\r$//' .shared-repo/scripts/*.sh || true
-
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Run py-stack-linter
+        uses: ross412/py-stack-linter/.github/actions/py-stack-linter@main
         with:
           python-version: ${{ inputs.python-version }}
-
-      - name: Run Ruff (using shared config)
-        id: ruff
-        uses: astral-sh/ruff-action@v3
-        continue-on-error: true
-        with:
-          version: ${{ inputs.ruff-version }}
-          args: check --config .shared-repo/ruff.toml
-      
-      - name: File structure lint
-        id: structure
-        if: ${{ inputs.run-structure-lint }}
-        continue-on-error: true
-        run: bash ".shared-repo/scripts/structure-lint.sh"
-
-      - name: Build Hadolint config
-        if: ${{ inputs.run-dockerfile-lint }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp ".shared-repo/.hadolint.yaml" "${{ github.workspace }}/hadolint.generated.yaml"
-
-          echo "" >> "${{ github.workspace }}/hadolint.generated.yaml"
-          echo "trustedRegistries:" >> "${{ github.workspace }}/hadolint.generated.yaml"
-          echo "  - docker.io" >> "${{ github.workspace }}/hadolint.generated.yaml"
-          echo "  - ghcr.io" >> "${{ github.workspace }}/hadolint.generated.yaml"
-
-          if [ -n "${{ inputs.trusted-registries }}" ]; then
-            IFS=',' read -ra REGS <<< "${{ inputs.trusted-registries }}"
-            for r in "${REGS[@]}"; do
-              r="$(echo "$r" | xargs)"
-              [ -n "$r" ] && echo "  - $r" >> "${{ github.workspace }}/hadolint.generated.yaml"
-            done
-          fi
-
-
-      - name: Hadolint (Dockerfile lint)
-        id: hadolint
-        if: ${{ inputs.run-dockerfile-lint }}
-        uses: hadolint/hadolint-action@v3.1.0
-        continue-on-error: true
-        with:
-          dockerfile: Dockerfile
-          recursive: true
-          config: ${{ github.workspace }}/hadolint.generated.yaml
-
-      - name: Fail if any linter failed
-        if: always()
-        run: |
-          echo "Ruff: ${{ steps.ruff.outcome }}"
-          echo "Structure: ${{ steps.structure.outcome }}"
-          echo "Hadolint: ${{ steps.hadolint.outcome }}"
-
-          if [ "${{ steps.ruff.outcome }}" != "success" ] || \
-            [ "${{ steps.structure.outcome }}" != "success" ] || \
-            [ "${{ steps.hadolint.outcome }}" != "success" ]; then
-            echo "One or more linters failed."
-            exit 1
-          fi
+          ruff-version: ${{ inputs.ruff-version }}
+          run-structure-lint: ${{ inputs.run-structure-lint }}
+          run-dockerfile-lint: ${{ inputs.run-dockerfile-lint }}
+          dockerfile-glob: ${{ inputs.dockerfile-glob }}
+          trusted-registries: ${{ inputs.trusted-registries }}

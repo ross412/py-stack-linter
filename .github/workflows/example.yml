@@ -1,0 +1,27 @@
+name: Lint with py-stack-linter
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run py-stack-linter
+        uses: ross412/py-stack-linter@main
+        with:
+          python-version: "3.11"
+          ruff-version: "latest"
+          run-structure-lint: true
+          run-dockerfile-lint: true
+          # Optionally add trusted registries for Dockerfile validation
+          # trusted-registries: "my-registry.com,another-registry.io"
