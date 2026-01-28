@@ -22,10 +22,6 @@ inputs:
     description: Enable Dockerfile linting
     required: false
     default: "true"
-  dockerfile-glob:
-    description: Glob pattern for finding Dockerfiles
-    required: false
-    default: "**/Dockerfile"
   trusted-registries:
     description: Comma-separated list of extra trusted registries for hadolint
     required: false
@@ -96,32 +92,25 @@ runs:
       if: always()
       shell: bash
       run: |
-        echo "Ruff: ${{ steps.ruff.outcome }}"
-        echo "Structure: ${{ steps.structure.outcome }}"
-        echo "Hadolint: ${{ steps.hadolint.outcome }}"
+        ruff_failed=0
+        structure_failed=0
+        hadolint_failed=0
 
         if [ "${{ steps.ruff.outcome }}" != "success" ] && [ "${{ steps.ruff.outcome }}" != "skipped" ]; then
           echo "Ruff linting failed."
           ruff_failed=1
-        else
-          ruff_failed=0
         fi
 
         if [ "${{ steps.structure.outcome }}" != "success" ] && [ "${{ steps.structure.outcome }}" != "skipped" ]; then
           echo "Structure linting failed."
           structure_failed=1
-        else
-          structure_failed=0
         fi
 
         if [ "${{ steps.hadolint.outcome }}" != "success" ] && [ "${{ steps.hadolint.outcome }}" != "skipped" ]; then
           echo "Hadolint failed."
           hadolint_failed=1
-        else
-          hadolint_failed=0
         fi
 
         if [ $ruff_failed -eq 1 ] || [ $structure_failed -eq 1 ] || [ $hadolint_failed -eq 1 ]; then
-          echo "One or more linters failed."
           exit 1
         fi
