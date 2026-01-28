@@ -18,9 +18,6 @@ on:
       dockerfile-glob:
         type: string
         default: "**/Dockerfile"
-      extra-ruff-args:
-        type: string
-        default: ""
       trusted-registries:
         type: string
         default: ""
@@ -54,7 +51,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           version: ${{ inputs.ruff-version }}
-          args: --config .shared-repo/ruff.toml --config ${{ inputs.extra-ruff-args }}
+          args: --config .shared-repo/ruff.toml
 
       - name: File structure lint
         if: ${{ inputs.run-structure-lint }}
