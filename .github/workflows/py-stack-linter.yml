@@ -41,6 +41,12 @@ jobs:
           repository: ross412/py-stack-linter
           ref: main
           path: .shared-repo
+        
+      - name: Normalize shared scripts to LF
+        run: |
+          sed -i 's/\r$//' .shared-repo/scripts/structure-lint.sh
+          sed -i 's/\r$//' .shared-repo/scripts/*.sh || true
+
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -54,7 +60,7 @@ jobs:
         with:
           version: ${{ inputs.ruff-version }}
           args: check --config .shared-repo/ruff.toml
-
+      
       - name: File structure lint
         id: structure
         if: ${{ inputs.run-structure-lint }}
