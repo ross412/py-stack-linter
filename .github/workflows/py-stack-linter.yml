@@ -68,23 +68,26 @@ jobs:
         run: bash ".shared-repo/scripts/structure-lint.sh"
 
       - name: Build Hadolint config
-        if: ${{ inputs.run-docker-file-lint}}
+        if: ${{ inputs.run-dockerfile-lint }}
         continue-on-error: true
+        shell: bash
         run: |
-          cp ".shared-repo/.hadolint.yaml" hadolint.generated.yaml
+          set -euo pipefail
+          cp ".shared-repo/.hadolint.yaml" "${{ github.workspace }}/hadolint.generated.yaml"
 
-          echo "" >> hadolint.generated.yaml
-          echo "trustedRegistries:" >> hadolint.generated.yaml
-          echo "  - docker.io" >> hadolint.generated.yaml
-          echo "  - ghcr.io" >> hadolint.generated.yaml
+          echo "" >> "${{ github.workspace }}/hadolint.generated.yaml"
+          echo "trustedRegistries:" >> "${{ github.workspace }}/hadolint.generated.yaml"
+          echo "  - docker.io" >> "${{ github.workspace }}/hadolint.generated.yaml"
+          echo "  - ghcr.io" >> "${{ github.workspace }}/hadolint.generated.yaml"
 
           if [ -n "${{ inputs.trusted-registries }}" ]; then
             IFS=',' read -ra REGS <<< "${{ inputs.trusted-registries }}"
             for r in "${REGS[@]}"; do
               r="$(echo "$r" | xargs)"
-              [ -n "$r" ] && echo "  - $r" >> hadolint.generated.yaml
+              [ -n "$r" ] && echo "  - $r" >> "${{ github.workspace }}/hadolint.generated.yaml"
             done
           fi
+
 
       - name: Hadolint (Dockerfile lint)
         id: hadolint
@@ -93,7 +96,7 @@ jobs:
         continue-on-error: true
         with:
           dockerfile: ${{ inputs.dockerfile-glob }}
-          config: hadolint.generated.yaml
+          config: ${{ github.workspace }}/hadolint.generated.yaml
 
       - name: Fail if any linter failed
         if: always()
