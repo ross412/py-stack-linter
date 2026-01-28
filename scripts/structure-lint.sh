@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "ERROR: structure-lint.sh must be run with bash" >&2
+  exit 2
+fi
+
 set -euo pipefail
 
 # =========================
