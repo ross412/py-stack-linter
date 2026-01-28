@@ -42,6 +42,7 @@ convention = "google"
 fixable = []
 unfixable = []
 
+[lint.pycodestyle]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [format]
