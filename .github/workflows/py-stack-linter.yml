@@ -55,7 +55,6 @@ jobs:
         with:
           version: ${{ inputs.ruff-version }}
           args: >-
-            check
             --config .shared-repo/ruff.toml
             ${{ inputs.extra-ruff-args }}
           src: "."
